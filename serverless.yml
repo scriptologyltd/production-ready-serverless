@@ -1,0 +1,19 @@
+service: workshop-${self:custom.name}
+
+frameworkVersion: '3'
+
+custom:
+  name: andrewwhitehouse
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+
+functions:
+  get-index:
+    handler: functions/get-index.handler
+    events:
+      - http:
+          path: /
+          method: get
