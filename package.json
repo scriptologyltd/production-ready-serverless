@@ -15,5 +15,9 @@
     "dotenv": "16.3.1",
     "serverless": "3.38.0",
     "serverless-export-env": "2.2.0"
+  },
+  "dependencies": {
+    "axios": "1.6.5",
+    "mustache": "4.2.0"
   }
 }

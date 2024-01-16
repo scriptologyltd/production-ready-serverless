@@ -27,6 +27,8 @@ functions:
       - http:
           path: /
           method: get
+    environment:
+      restaurants_api: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${sls:stage}/restaurants
 
   get-restaurants:
     handler: functions/get-restaurants.handler
