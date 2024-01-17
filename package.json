@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dotEnv": "sls export-env --all",
-    "test": "npm run dotEnv && jest"
+    "test": "npm run dotEnv && cross-env TEST_MODE=handler jest"
   },
   "keywords": [],
   "author": "",
