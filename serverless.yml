@@ -30,6 +30,8 @@ provider:
     rest_api_url: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${sls:stage}
     serviceName: ${self:service}
     stage: ${sls:stage}
+    middy_cache_enabled: true
+    middy_cache_expiry_milliseconds: 60000 # 1 mins
 
 
 functions:
