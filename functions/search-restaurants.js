@@ -1,14 +1,15 @@
 const { DynamoDB } = require("@aws-sdk/client-dynamodb")
 const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb")
-const middy = require('@middy/core')
-const ssm = require('@middy/ssm')
 const dynamodbClient = new DynamoDB()
 const dynamodb = DynamoDBDocumentClient.from(dynamodbClient)
+const middy = require('@middy/core')
+const ssm = require('@middy/ssm')
+
+const middyCacheEnabled = JSON.parse(process.env.middy_cache_enabled)
+const middyCacheExpiry = parseInt(process.env.middy_cache_expiry_milliseconds)
 
 const { serviceName, ssmStage } = process.env
 const tableName = process.env.restaurants_table
-const middyCacheEnabled = JSON.parse(process.env.middy_cache_enabled)
-const middyCacheExpiry = parseInt(process.env.middy_cache_expiry_milliseconds)
 
 const findRestaurantsByTheme = async (theme, count) => {
   console.log(`finding (up to ${count}) restaurants with the theme ${theme}...`)
@@ -26,7 +27,7 @@ const findRestaurantsByTheme = async (theme, count) => {
 module.exports.handler = middy(async (event, context) => {
   const req = JSON.parse(event.body)
   const theme = req.theme
-  console.info(context.secretString)
+  console.info("Secret " + context.secretString)
   const restaurants = await findRestaurantsByTheme(theme, context.config.defaultResults)
   const response = {
     statusCode: 200,
@@ -37,7 +38,7 @@ module.exports.handler = middy(async (event, context) => {
 }).use(ssm({
   cache: middyCacheEnabled,
   cacheExpiry: middyCacheExpiry,
-  setToContext: true, // <<< N.B.
+  setToContext: true,
   fetchData: {
     config: `/${serviceName}/${ssmStage}/search-restaurants/config`,
     secretString: `/${serviceName}/${ssmStage}/search-restaurants/secretString`

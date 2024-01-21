@@ -7,11 +7,11 @@ custom:
   export-env:
     overwrite: true
 
-
 provider:
   name: aws
   runtime: nodejs18.x
   region: eu-west-2
+
   iam:
     role:
       statements:
@@ -25,7 +25,7 @@ provider:
           Action: ssm:GetParameters*
           Resource:
             - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${param:ssmStage, sls:stage}/get-restaurants/config
-            - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${param:ssmStage, sls:stage}/search-restaurants/config  
+            - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${param:ssmStage, sls:stage}/search-restaurants/config
             - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${param:ssmStage, sls:stage}/search-restaurants/secretString
   environment:
     rest_api_url: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${sls:stage}
@@ -128,7 +128,7 @@ resources:
         ExplicitAuthFlows:
           - ALLOW_USER_SRP_AUTH
           - ALLOW_REFRESH_TOKEN_AUTH
-        PreventUserExistenceErrors: ENABLED         
+        PreventUserExistenceErrors: ENABLED
 
     ServerCognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
@@ -150,7 +150,7 @@ resources:
             - ""
             - - https://
               - !Ref ApiGatewayRestApi
-              - .execute-api.${aws:region}.amazonaws.com/${sls:stage}    
+              - .execute-api.${aws:region}.amazonaws.com/${sls:stage}
 
   Outputs:
     RestaurantsTableName:
