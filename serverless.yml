@@ -30,6 +30,9 @@ provider:
         - Effect: Allow
           Action: kms:Decrypt
           Resource: ${ssm:/${self:service}/${param:ssmStage, sls:stage}/kmsArn}
+        - Effect: Allow
+          Action: events:PutEvents
+          Resource: !GetAtt EventBus.Arn
   environment:
     rest_api_url: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${sls:stage}
     serviceName: ${self:service}
@@ -73,6 +76,19 @@ functions:
             arn: !GetAtt CognitoUserPool.Arn
     environment:
       restaurants_table: !Ref RestaurantsTable
+
+  place-order:
+    handler: functions/place-order.handler
+    events:
+      - http:
+          path: /orders
+          method: post
+          authorizer:
+            name: CognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: !GetAtt CognitoUserPool.Arn
+    environment:
+      bus_name: !Ref EventBus
 
 resources:
   Resources:
@@ -155,6 +171,11 @@ resources:
               - !Ref ApiGatewayRestApi
               - .execute-api.${aws:region}.amazonaws.com/${sls:stage}
 
+    EventBus:
+      Type: AWS::Events::EventBus
+      Properties:
+        Name: order_events_${sls:stage}_${self:custom.name}
+
   Outputs:
     RestaurantsTableName:
       Value: !Ref RestaurantsTable
@@ -170,6 +191,9 @@ resources:
 
     CognitoUserPoolServerClientId:
       Value: !Ref ServerCognitoUserPoolClient
+
+    EventBusName:
+      Value: !Ref EventBus
 
 plugins:
   - serverless-export-env
