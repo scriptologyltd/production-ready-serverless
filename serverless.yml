@@ -33,6 +33,9 @@ provider:
         - Effect: Allow
           Action: events:PutEvents
           Resource: !GetAtt EventBus.Arn
+        - Effect: Allow
+          Action: sns:Publish
+          Resource: !Ref RestaurantNotificationTopic
   environment:
     rest_api_url: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${sls:stage}
     serviceName: ${self:service}
@@ -87,9 +90,23 @@ functions:
           authorizer:
             name: CognitoAuthorizer
             type: COGNITO_USER_POOLS
-            arn: !GetAtt CognitoUserPool.Arn
+            arn: !GetAtt CognitoUserPool.Arn        
     environment:
       bus_name: !Ref EventBus
+
+  notify-restaurant:
+    handler: functions/notify-restaurant.handler
+    events:
+      - eventBridge:
+          eventBus: !Ref EventBus
+          pattern:
+            source:
+              - big-mouth
+            detail-type:
+              - order_placed
+    environment:
+      bus_name: !Ref EventBus
+      restaurant_notification_topic: !Ref RestaurantNotificationTopic    
 
 resources:
   Resources:
@@ -177,6 +194,9 @@ resources:
       Properties:
         Name: order_events_${sls:stage}_${self:custom.name}
 
+    RestaurantNotificationTopic:
+      Type: AWS::SNS::Topic
+
   Outputs:
     RestaurantsTableName:
       Value: !Ref RestaurantsTable
@@ -195,6 +215,12 @@ resources:
 
     EventBusName:
       Value: !Ref EventBus
+
+    RestaurantNotificationTopicName:
+      Value: !GetAtt RestaurantNotificationTopic.TopicName
+
+    RestaurantNotificationTopicArn:
+      Value: !Ref RestaurantNotificationTopic  
 
 plugins:
   - serverless-export-env
