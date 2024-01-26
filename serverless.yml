@@ -53,6 +53,7 @@ functions:
       cognito_user_pool_id: !Ref CognitoUserPool
       cognito_client_id: !Ref WebCognitoUserPoolClient
       cognito_server_client_id: !Ref ServerCognitoUserPoolClient
+      orders_api: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${sls:stage}/orders
 
   get-restaurants:
     handler: functions/get-restaurants.handler
