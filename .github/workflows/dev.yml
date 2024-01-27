@@ -33,11 +33,11 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: run integration test
-        run: npm run test
-
       - name: deploy to dev
         run: npx sls deploy
+
+      - name: run integration test
+        run: npm run test
 
       - name: run end-to-end tests
         run: npm run test:e2e
