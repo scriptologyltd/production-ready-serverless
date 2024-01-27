@@ -26,15 +26,21 @@ const startListening = () => {
             // seen this message already, ignore
             return
           }
-    
+      
           messageIds.add(msg.MessageId)
-    
+      
           const body = JSON.parse(msg.Body)
           if (body.TopicArn) {
             messages.next({
               sourceType: 'sns',
               source: body.TopicArn,
               message: body.Message
+            })
+          } else if (body.eventBusName) {
+            messages.next({
+              sourceType: 'eventbridge',
+              source: body.eventBusName,
+              message: JSON.stringify(body.event)
             })
           }
         })
