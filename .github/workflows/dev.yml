@@ -33,6 +33,9 @@ jobs:
       - name: npm ci
         run: npm ci
 
+      - name: generate fresh .env file
+        run: npm run dotEnv
+
       - name: deploy to dev
         run: npx sls deploy
 
