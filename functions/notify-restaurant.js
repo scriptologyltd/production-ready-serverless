@@ -8,6 +8,9 @@ const { DynamoDBPersistenceLayer } = require('@aws-lambda-powertools/idempotency
 const busName = process.env.bus_name
 const topicArn = process.env.restaurant_notification_topic
 
+const { Logger } = require('@aws-lambda-powertools/logger')
+const logger = new Logger({ serviceName: process.env.serviceName })
+
 const persistenceStore = new DynamoDBPersistenceLayer({
   tableName: process.env.idempotency_table
 })
@@ -21,8 +24,8 @@ const handler = async (event) => {
   await sns.send(publishCmd)
 
   const { restaurantName, orderId } = order
-  console.log(`notified restaurant [${restaurantName}] of order [${orderId}]`)
-
+  logger.debug('notified restaurant', { orderId, restaurantName })
+ 
   const putEventsCmd = new PutEventsCommand({
     Entries: [{
       Source: 'big-mouth',
@@ -33,7 +36,10 @@ const handler = async (event) => {
   })
   await eventBridge.send(putEventsCmd)
 
-  console.log(`published 'restaurant_notified' event to EventBridge`)
+  logger.debug(`published event into EventBridge`, {
+    eventType: 'restaurant_notified',
+    busName
+  })
 
   return orderId
 }
