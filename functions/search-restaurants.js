@@ -4,7 +4,7 @@ const dynamodbClient = new DynamoDB()
 const dynamodb = DynamoDBDocumentClient.from(dynamodbClient)
 const middy = require('@middy/core')
 const ssm = require('@middy/ssm')
-const { Logger } = require('@aws-lambda-powertools/logger')
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const logger = new Logger({ serviceName: process.env.serviceName })
 
 const middyCacheEnabled = JSON.parse(process.env.middy_cache_enabled)
@@ -47,4 +47,4 @@ module.exports.handler = middy(async (event, context) => {
     config: `/${serviceName}/${ssmStage}/search-restaurants/config`,
     secretString: `/${serviceName}/${ssmStage}/search-restaurants/secretString`
   }
-}))
+})).use(injectLambdaContext(logger))
