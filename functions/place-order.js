@@ -4,10 +4,11 @@ const chance = require('chance').Chance()
 
 const busName = process.env.bus_name
 
-const { Logger } = require('@aws-lambda-powertools/logger')
+const middy = require('@middy/core')
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const logger = new Logger({ serviceName: process.env.serviceName })
 
-module.exports.handler = async (event) => {
+module.exports.handler = middy(async (event, context) => {
   logger.refreshSampleRateCalculation()
   const restaurantName = JSON.parse(event.body).restaurantName
 
@@ -38,4 +39,4 @@ module.exports.handler = async (event) => {
   }
 
   return response
-}
+}).use(injectLambdaContext(logger))
