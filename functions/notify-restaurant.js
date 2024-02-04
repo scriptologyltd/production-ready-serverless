@@ -16,6 +16,7 @@ const persistenceStore = new DynamoDBPersistenceLayer({
 })
 
 const handler = async (event) => {
+  logger.refreshSampleRateCalculation()
   const order = event.detail
   const publishCmd = new PublishCommand({
     Message: JSON.stringify(order),

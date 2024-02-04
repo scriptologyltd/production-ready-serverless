@@ -28,6 +28,7 @@ const findRestaurantsByTheme = async (theme, count) => {
 }
 
 module.exports.handler = middy(async (event, context) => {
+  logger.refreshSampleRateCalculation()
   const req = JSON.parse(event.body)
   const theme = req.theme
   console.info("Secret " + context.secretString)

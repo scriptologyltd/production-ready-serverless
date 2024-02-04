@@ -29,6 +29,7 @@ provider:
     middy_cache_expiry_milliseconds: 60000 # 1 mins
     ssmStage: ${param:ssmStage, sls:stage}
     LOG_LEVEL: ${self:custom.logLevel.${sls:stage}, self:custom.logLevel.default}
+    POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
 
 functions:
   get-index:

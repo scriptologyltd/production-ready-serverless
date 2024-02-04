@@ -30,6 +30,7 @@ const getRestaurants = async (count) => {
 }
 
 module.exports.handler = middy(async (event, context) => {
+  logger.refreshSampleRateCalculation()
   const restaurants = await getRestaurants(context.config.defaultResults)
   const response = {
     statusCode: 200,

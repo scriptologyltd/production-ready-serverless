@@ -8,6 +8,7 @@ const { Logger } = require('@aws-lambda-powertools/logger')
 const logger = new Logger({ serviceName: process.env.serviceName })
 
 module.exports.handler = async (event) => {
+  logger.refreshSampleRateCalculation()
   const restaurantName = JSON.parse(event.body).restaurantName
 
   const orderId = chance.guid()
