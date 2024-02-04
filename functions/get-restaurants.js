@@ -10,7 +10,7 @@ const tableName = process.env.restaurants_table
 const middyCacheEnabled = JSON.parse(process.env.middy_cache_enabled)
 const middyCacheExpiry = parseInt(process.env.middy_cache_expiry_milliseconds)
 
-const { Logger } = require('@aws-lambda-powertools/logger')
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const logger = new Logger({ serviceName: process.env.serviceName })
 
 const getRestaurants = async (count) => {
@@ -45,4 +45,4 @@ module.exports.handler = middy(async (event, context) => {
   fetchData: {
     config: `/${serviceName}/${ssmStage}/get-restaurants/config`
   }
-}))
+})).use(injectLambdaContext(logger))
